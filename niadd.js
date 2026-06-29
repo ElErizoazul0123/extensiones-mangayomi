@@ -10,7 +10,7 @@ const mangayomiSources = [{
     "iconUrl": "https://es.niadd.com/files/images/favicon.ico",
     "typeSource": "single",
     "itemType": 0,
-    "version": "1.8",
+    "version": "0.2",
     "pkgPath": "",
     "notes": "Extensión para Niadd - Leer manga en español"
 }];
