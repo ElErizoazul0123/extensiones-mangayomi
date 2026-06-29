@@ -28,7 +28,7 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 4. Pulsa el botón **"+"** o **"Añadir repositorio"**
 5. Introduce la siguiente URL:
    ```
-   https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/sources.json
+   https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/index.json
    ```
 6. ¡Listo! Las extensiones aparecerán en la lista de fuentes disponibles
 
@@ -39,7 +39,7 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 | Nombre | Idioma | Versión | Sitio |
 |--------|--------|---------|-------|
 | LeerMangaEsp | 🇪🇸 Español | 0.2 | [leermangaesp.net](https://leermangaesp.net) |
-| Niadd | 🇪🇸 Español | 1.8 | [es.niadd.com](https://es.niadd.com) |
+| Niadd | 🇪🇸 Español | 0.2 | [es.niadd.com](https://es.niadd.com) |
 
 ---
 
