@@ -23,23 +23,23 @@ Si estás interesado en crear tus propias extensiones, siéntete libre de usar e
 Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 
 1. Abre Mangayomi
-2. Ve a **Explorar** (en la barra inferior)
-3. Toca **"Repositorio de extensiones de manga"**
-4. Pulsa el botón **"+"** o **"Añadir repositorio"**
-5. Introduce la siguiente URL:
-   ```
-   https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/index.json
-   ```
-6. ¡Listo! Las extensiones aparecerán en la lista de fuentes disponibles
+2. Ve a **Ajustes** o **Más** (en la barra inferior)
+3. Selecciona **Configuraciones**
+4. Toca **Explorar**
+5. Ve a **Repositorios de extensiones de manga**
+6. Pulsa el botón **"+"** o **"Añadir repositorio"**
+7. Introduce la siguiente URL: https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/index.json
+8. ¡Listo! Las extensiones aparecerán en la lista de fuentes disponibles
 
 ---
 
 ## 📚 Extensiones disponibles
 
-| Nombre | Idioma | Versión | Sitio |
-|--------|--------|---------|-------|
-| LeerMangaEsp | 🇪🇸 Español | 0.2 | [leermangaesp.net](https://leermangaesp.net) |
-| Niadd | 🇪🇸 Español | 0.2 | [es.niadd.com](https://es.niadd.com) |
+| Nombre | Idioma | Versión | Sitio | Contenido |
+|--------|--------|---------|-------|-----------|
+| LeerMangaEsp | 🇪🇸 Español | 0.2 | [leermangaesp.net](https://leermangaesp.net) | Manga general |
+| Niadd | 🇪🇸 Español | 0.2 | [es.niadd.com](https://es.niadd.com) | Manga general |
+| **VerManhwa** | 🇪🇸 Español | **0.3** | [vermanhwa.com](https://vermanhwa.com) | **Manhwa +18** 🔞 |
 
 ---
 
@@ -77,7 +77,8 @@ Todas las extensiones en este repositorio son de **código abierto** y están di
 
 | Versión | Fecha | Extensión | Cambios |
 |---------|-------|-----------|---------|
-| 1.8 | 2026-06-29 | Niadd | Lanzamiento inicial — lista, detalle y lectura de capítulos |
+| 0.3 | 2026-06-29 | **VerManhwa** | ✨ Lanzamiento inicial — lista, detalle y lectura de capítulos (Modo List Style) |
+| 0.2 | 2026-06-29 | Niadd | Lanzamiento inicial — lista, detalle y lectura de capítulos |
 | 0.2 | 2026-06-28 | LeerMangaEsp | Lanzamiento inicial |
 
 ---
@@ -86,23 +87,21 @@ Todas las extensiones en este repositorio son de **código abierto** y están di
 
 Este proyecto está bajo la licencia **Apache 2.0**.
 
-Puedes usar, copiar, modificar y distribuir este software libremente, incluso en proyectos comerciales, siempre que incluyas el aviso de copyright y la licencia originales. A diferencia de MIT, Apache 2.0 también incluye una **concesión explícita de patentes**, lo que te protege legalmente de forma más completa.
+Puedes usar, copiar, modificar y distribuir este software libremente, incluso en proyectos comerciales, siempre que incluyas el aviso de copyright y la licencia originales.
 
-```
 Copyright 2026 ElErizoazul0123
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-```
 
 ---
 
