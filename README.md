@@ -26,9 +26,20 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 2. Ve a **Explorar** (en la barra inferior)
 3. Toca **"Repositorio de extensiones de manga"**
 4. Pulsa el botón **"+"** o **"Añadir repositorio"**
-5. Introduce la siguiente URL: https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/sources.json
-
+5. Introduce la siguiente URL:
+   ```
+   https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/sources.json
+   ```
 6. ¡Listo! Las extensiones aparecerán en la lista de fuentes disponibles
+
+---
+
+## 📚 Extensiones disponibles
+
+| Nombre | Idioma | Versión | Sitio |
+|--------|--------|---------|-------|
+| LeerMangaEsp | 🇪🇸 Español | 0.2 | [leermangaesp.net](https://leermangaesp.net) |
+| Niadd | 🇪🇸 Español | 1.8 | [es.niadd.com](https://es.niadd.com) |
 
 ---
 
@@ -36,7 +47,7 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 
 Si prefieres instalar una extensión específica manualmente:
 
-1. Descarga el archivo `.js` de la extensión
+1. Descarga el archivo `.js` de la extensión que quieras
 2. Colócalo en la carpeta de extensiones de Mangayomi
 3. Reinicia la app
 
@@ -55,7 +66,7 @@ Todas las extensiones en este repositorio son de **código abierto** y están di
 
 ---
 
-## 🔧 Soporte
+## 🐛 Soporte
 
 - Si encuentras un error, abre un **issue** en este repositorio
 - Si quieres contribuir, haz un **fork** y envía un **pull request**
@@ -64,23 +75,34 @@ Todas las extensiones en este repositorio son de **código abierto** y están di
 
 ## 📝 Registro de cambios
 
-| Versión | Fecha | Cambios |
-|---------|-------|---------|
-| 0.2 | 2026-06-28 | Lanzamiento inicial de LeerMangaEsp |
+| Versión | Fecha | Extensión | Cambios |
+|---------|-------|-----------|---------|
+| 1.8 | 2026-06-29 | Niadd | Lanzamiento inicial — lista, detalle y lectura de capítulos |
+| 0.2 | 2026-06-28 | LeerMangaEsp | Lanzamiento inicial |
 
 ---
 
 ## 📜 Licencia
 
-**MIT License**
+Este proyecto está bajo la licencia **Apache 2.0**.
 
-Copyright (c) 2026 ElErizoazul0123
+Puedes usar, copiar, modificar y distribuir este software libremente, incluso en proyectos comerciales, siempre que incluyas el aviso de copyright y la licencia originales. A diferencia de MIT, Apache 2.0 también incluye una **concesión explícita de patentes**, lo que te protege legalmente de forma más completa.
 
-Se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados, para utilizar el Software sin restricción, incluyendo sin limitación los derechos de uso, copia, modificación, fusión, publicación, distribución, sublicencia y/o venta de copias del Software, y para permitir a las personas a las que se les proporcione el Software hacerlo, sujeto a las siguientes condiciones:
+```
+Copyright 2026 ElErizoazul0123
 
-El aviso de copyright anterior y este aviso de permiso se incluirán en todas las copias o partes sustanciales del Software.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A GARANTÍAS DE COMERCIABILIDAD, IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO LOS AUTORES O TITULARES DEL COPYRIGHT SERÁN RESPONSABLES DE NINGUNA RECLAMACIÓN, DAÑO U OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRO TIPO, QUE SURJA DE, FUERA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTROS TRATOS EN EL SOFTWARE.
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
 
 ---
 
