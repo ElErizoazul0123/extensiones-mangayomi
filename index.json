@@ -42,5 +42,27 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": ""
+  },
+  {
+    "name": "VerManhwa",
+    "id": 555555555,
+    "baseUrl": "https://vermanhwa.com",
+    "lang": "es",
+    "typeSource": "single",
+    "iconUrl": "https://vermanhwa.com/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": true,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/vermanhwa.js",
+    "apiUrl": "",
+    "version": "0.3",
+    "isManga": true,
+    "itemType": 0,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Extensión para leer manhwa +18 en español (Modo List Style)"
   }
 ]
