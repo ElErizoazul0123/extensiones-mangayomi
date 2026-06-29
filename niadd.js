@@ -1,5 +1,5 @@
 // Niadd - Extensión para Mangayomi
-// Versión: 1.8
+// Versión: 0.2
 // Web: https://es.niadd.com
 
 const mangayomiSources = [{
