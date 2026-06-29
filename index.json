@@ -28,7 +28,7 @@
     "baseUrl": "https://es.niadd.com",
     "lang": "es",
     "typeSource": "single",
-    "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/icons/es.niadd.png",
+    "iconUrl": "https://es.niadd.com/files/images/favicon.ico",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
