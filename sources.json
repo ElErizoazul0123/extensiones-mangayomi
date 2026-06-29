@@ -1,0 +1,15 @@
+[
+  {
+    "name": "LeerMangaEsp",
+    "langs": ["es"],
+    "baseUrl": "https://leermangaesp.net",
+    "apiUrl": "",
+    "iconUrl": "https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/icon.png",
+    "typeSource": "single",
+    "itemType": 0,
+    "version": "0.2",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "pkgPath": "leermangaesp.js"
+  }
+]
