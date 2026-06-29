@@ -1,26 +1,26 @@
 [
   {
     "name": "LeerMangaEsp",
-    "langs": ["es"],
+    "lang": "es",
     "baseUrl": "https://leermangaesp.net",
     "apiUrl": "",
     "iconUrl": "https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/icon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2",
+    "version": "0.0.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "leermangaesp.js"
   },
   {
     "name": "Niadd",
-    "langs": ["es"],
+    "lang": "es",
     "baseUrl": "https://es.niadd.com",
     "apiUrl": "",
     "iconUrl": "https://es.niadd.com/files/images/favicon.ico",
     "typeSource": "single",
     "itemType": 0,
-    "version": "1.8",
+    "version": "0.0.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "niadd.js"
