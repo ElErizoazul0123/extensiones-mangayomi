@@ -1,6 +1,6 @@
 // ============================================================
-// YupManga - Extensión para Mangayomi (FINAL - FUNCIONA)
-// Versión: 3.3
+// YupManga - Extensión para Mangayomi (CORREGIDA)
+// Versión: 3.8
 // Web: https://www.yupmanga.com
 // ============================================================
 
@@ -12,12 +12,17 @@ const mangayomiSources = [{
     "iconUrl": "https://www.yupmanga.com/img/favicon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "3.3",
+    "version": "3.8",
     "isAdult": false,
     "adult": false,
     "pkgPath": "",
     "notes": "Extensión para YupManga - Leer manga en español (Yuri/GL)"
 }];
+
+// ============================================================
+// DECLARACIÓN GLOBAL DE 'extention'
+// ============================================================
+var extention;
 
 class DefaultExtension extends MProvider {
 
@@ -359,7 +364,7 @@ class DefaultExtension extends MProvider {
     }
 
     // ============================================================
-    // 6. PÁGINAS DE UN CAPÍTULO (CORREGIDA - EXTRAE TODAS LAS PÁGINAS)
+    // 6. PÁGINAS DE UN CAPÍTULO (CORREGIDA - ROBUSTA SIN EVAL)
     // ============================================================
 
     async getPageList(url) {
@@ -371,68 +376,50 @@ class DefaultExtension extends MProvider {
         try {
             const res = await new Client().get(absoluteUrl, { headers: this.getHeaders(absoluteUrl) });
             const html = res.body;
-            if (!html) return [];
+            if (!html) {
+                console.warn('[YupManga] ⚠️ HTML vacío');
+                return [];
+            }
 
             const pages = [];
             const seen = new Set();
-
-            // ── 1. Extraer window.readerPageKeys (TEXTO LITERAL) ──
             let pageKeys = null;
             let totalPages = 0;
 
-            // Buscar el script que contiene readerPageKeys
-            const scriptRegex = /<script[^>]*>([\s\S]*?)<\/script>/gi;
-            let scriptMatch;
-            while ((scriptMatch = scriptRegex.exec(html)) !== null) {
-                const scriptContent = scriptMatch[1];
-                
-                // Buscar window.readerPageKeys = {...}
-                const keysMatch = scriptContent.match(/window\.readerPageKeys\s*=\s*(\{[\s\S]*?\});/);
-                if (keysMatch) {
-                    try {
-                        let keysStr = keysMatch[1];
-                        // Limpiar: eliminar comentarios
-                        keysStr = keysStr.replace(/\/\/.*$/gm, '');
-                        // Eliminar trailing commas (problema común en JSON)
-                        keysStr = keysStr.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-                        // Eliminar espacios y saltos de línea excesivos
-                        keysStr = keysStr.replace(/\s+/g, ' ');
-                        pageKeys = JSON.parse(keysStr);
-                        console.log(`[YupManga] ✅ pageKeys extraído: ${Object.keys(pageKeys).length} claves`);
-                        break;
-                    } catch (e) {
-                        console.warn('[YupManga] ⚠️ Error parseando pageKeys (intentando con eval)...');
-                        try {
-                            // Fallback: usar eval (peligroso pero necesario si el JSON es inválido)
-                            pageKeys = eval('(' + keysMatch[1] + ')');
-                            console.log(`[YupManga] ✅ pageKeys extraído con eval: ${Object.keys(pageKeys).length} claves`);
-                            break;
-                        } catch (e2) {
-                            console.warn('[YupManga] ⚠️ Error con eval:', e2);
-                        }
-                    }
-                }
+            // 1. Extraer window.readerPageKeys usando limpieza de JSON estructurada
+            const keysMatch = html.match(/window\.readerPageKeys\s*=\s*(\{[\s\S]*?\});/);
+            
+            if (keysMatch) {
+                try {
+                    let keysStr = keysMatch[1];
+                    keysStr = keysStr
+                        .replace(/\/\/.*$/gm, '')                  // Eliminar comentarios de línea
+                        .replace(/\/\*[\s\S]*?\*\//g, '')          // Eliminar comentarios multilínea
+                        .replace(/['"]/g, '"')                      // Normalizar comillas simples a dobles
+                        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":') // Colocar comillas dobles a las propiedades
+                        .replace(/,\s*}/g, '}')                    // Eliminar comas flotantes finales
+                        .replace(/,\s*]/g, ']')                    // Eliminar comas flotantes finales en arrays
+                        .replace(/\s+/g, ' ')                      // Limpiar saltos de línea y tabuladores redundantes
+                        .trim();
 
-                // Buscar totalPages en el mismo script
-                const totalMatch = scriptContent.match(/totalPages\s*:\s*(\d+)/);
-                if (totalMatch) {
-                    totalPages = parseInt(totalMatch[1], 10);
+                    pageKeys = JSON.parse(keysStr);
+                    console.log(`[YupManga] ✅ pageKeys extraído con éxito (JSON): ${Object.keys(pageKeys).length} claves`);
+                } catch (e) {
+                    console.warn('[YupManga] ⚠️ Error limpiando y parseando pageKeys con JSON.parse:', e);
                 }
             }
 
-            // Si no se encontró totalPages, buscar en el resto del HTML
-            if (!totalPages) {
-                const totalMatch = html.match(/totalPages\s*:\s*(\d+)/);
-                if (totalMatch) {
-                    totalPages = parseInt(totalMatch[1], 10);
-                } else if (pageKeys) {
-                    const keys = Object.keys(pageKeys);
-                    totalPages = keys.length ? Math.max(...keys.map(k => parseInt(k, 10))) : 0;
-                }
+            // 2. Determinar la cantidad total de páginas (totalPages)
+            const totalMatch = html.match(/totalPages\s*:\s*(\d+)/);
+            if (totalMatch) {
+                totalPages = parseInt(totalMatch[1], 10);
+            } else if (pageKeys) {
+                const keys = Object.keys(pageKeys);
+                totalPages = keys.length ? Math.max(...keys.map(k => parseInt(k, 10))) : 0;
             }
-            console.log(`[YupManga] 📊 totalPages: ${totalPages}`);
+            console.log(`[YupManga] 📊 totalPages detectadas: ${totalPages}`);
 
-            // ── 2. Construir URLs usando las claves ──
+            // 3. Reconstruir las URLs usando las claves validadas
             if (pageKeys && totalPages > 0) {
                 let count = 0;
                 for (let i = 1; i <= totalPages; i++) {
@@ -446,39 +433,36 @@ class DefaultExtension extends MProvider {
                         }
                     }
                 }
-                console.log(`[YupManga] ✅ Páginas construidas: ${count}/${totalPages}`);
+                console.log(`[YupManga] ✅ Páginas mapeadas con Keys: ${count}/${totalPages}`);
                 if (pages.length > 0) {
                     return pages;
                 }
             }
 
-            // ── 3. Fallback: extraer imágenes del HTML ──
-            console.warn('[YupManga] ⚠️ Fallback: extrayendo imágenes del HTML...');
-            
-            // Buscar en data-src (primero)
-            const dataSrcRegex = /<img[^>]+data-src=["']([^"']+)["']/gi;
+            // 4. Fallback directo buscando etiquetas de imagen en el lector HTML
+            console.warn('[YupManga] ⚠️ Usando fallback directo de imágenes del HTML...');
+            const imgRegex = /<img[^>]+(?:data-src|src)=["']([^"']+)["']/gi;
             let match;
-            while ((match = dataSrcRegex.exec(html)) !== null) {
-                let src = this.toAbsoluteUrl(match[1].trim());
-                if (src && src.includes('image-proxy-v2.php') && !seen.has(src)) {
-                    seen.add(src);
-                    pages.push(src);
-                }
-            }
-            
-            // Si no hay, buscar en src
-            if (pages.length === 0) {
-                const srcRegex = /<img[^>]+src=["']([^"']+\.(?:webp|jpg|jpeg|png)[^"']*)["']/gi;
-                while ((match = srcRegex.exec(html)) !== null) {
-                    let src = this.toAbsoluteUrl(match[1].trim());
-                    if (src && !src.includes('logo') && !src.includes('icon') && !src.includes('no-cover') && !seen.has(src)) {
-                        seen.add(src);
-                        pages.push(src);
+            while ((match = imgRegex.exec(html)) !== null) {
+                let src = match[1].trim();
+                
+                if (
+                    src && 
+                    !src.startsWith('data:') && 
+                    !src.includes('logo') && 
+                    !src.includes('avatar') && 
+                    !src.includes('icon') &&
+                    !src.includes('favicon')
+                ) {
+                    const absSrc = this.toAbsoluteUrl(src);
+                    if (!seen.has(absSrc)) {
+                        seen.add(absSrc);
+                        pages.push(absSrc);
                     }
                 }
             }
 
-            console.log(`[YupManga] 🖼️ Páginas extraídas (fallback): ${pages.length}`);
+            console.log(`[YupManga] 🖼️ Páginas extraídas vía fallback: ${pages.length}`);
             return pages;
 
         } catch (e) {
@@ -527,9 +511,228 @@ class DefaultExtension extends MProvider {
     async getVideoList(url) { return []; }
 }
 
+// Inicializar y exportar YupManga de forma global
+const extensionInstance = new DefaultExtension();
+var extention = extensionInstance;
+var extension = extensionInstance;
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = extensionInstance;
+}
+
+if (typeof globalThis !== 'undefined') {
+    globalThis.source = extensionInstance;
+    globalThis.extension = extensionInstance;
+    globalThis.extention = extensionInstance;
+    globalThis.DefaultExtension = DefaultExtension;
+}
+
+
 // ============================================================
-// EXPORTACIÓN
+// Niadd - Extensión para Mangayomi
+// Versión: 0.3
+// Web: https://es.niadd.com
 // ============================================================
 
-var extention = new DefaultExtension();
-var extension = extention;
+const niaddSources = [{
+    "name": "Niadd",
+    "lang": "es",
+    "baseUrl": "https://es.niadd.com",
+    "apiUrl": "",
+    "iconUrl": "https://es.niadd.com/files/images/favicon.ico",
+    "typeSource": "single",
+    "itemType": 0,
+    "version": "0.3",
+    "pkgPath": "",
+    "notes": "Extensión para Niadd - Leer manga en español"
+}];
+
+class NiaddExtension extends MProvider {
+
+    constructor() {
+        super();
+        this.baseUrl = "https://es.niadd.com";
+    }
+
+    getHeaders(url) {
+        return {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Referer": this.baseUrl,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "es-ES,es;q=0.9,en;q=0.8"
+        };
+    }
+
+    toAbsoluteUrl(url) {
+        if (!url) return '';
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        return this.baseUrl + (url.startsWith('/') ? url : '/' + url);
+    }
+
+    mangaListFromPage(res) {
+        const doc = new Document(res.body);
+        const list = [];
+        const seen = new Set();
+
+        const anchors = doc.select("a[href*='/manga/'][title], a[href*='/original/'][title]");
+
+        for (const a of anchors) {
+            const name = (a.attr("title") || a.text || "").trim();
+            if (!name) continue;
+
+            const link = this.toAbsoluteUrl(a.attr("href") || "");
+            if (!link || seen.has(link)) continue;
+
+            let imageUrl = "";
+            const imgInside = a.selectFirst("img");
+            if (imgInside) {
+                imageUrl = this.toAbsoluteUrl(
+                    imgInside.attr("data-src") || imgInside.attr("src") || ""
+                );
+            }
+            if (!imageUrl) {
+                const parent = a.parentNode;
+                const imgSibling = parent ? parent.selectFirst("img") : null;
+                if (imgSibling) {
+                    imageUrl = this.toAbsoluteUrl(
+                        imgSibling.attr("data-src") || imgSibling.attr("src") || ""
+                    );
+                }
+            }
+
+            seen.add(link);
+            list.push({ name, imageUrl, link });
+        }
+
+        let hasNextPage = false;
+        for (const a of doc.select("a")) {
+            const txt = (a.text || "").trim();
+            if (txt.includes("Siguiente") || txt.includes(">>")) {
+                const href = a.attr("href") || "";
+                if (href && href !== "#") { hasNextPage = true; break; }
+            }
+        }
+
+        return { list, hasNextPage };
+    }
+
+    async getPopular(page) {
+        if (page > 100) return { list: [], hasNextPage: false };
+        const url = `${this.baseUrl}/category/index_${page}.html`;
+        const res = await new Client().get(url, { headers: this.getHeaders(url) });
+        return this.mangaListFromPage(res);
+    }
+
+    get supportsLatest() { return true; }
+
+    async getLatestUpdates(page) {
+        if (page > 100) return { list: [], hasNextPage: false };
+        const url = page === 1
+            ? `${this.baseUrl}/list/New-Update/`
+            : `${this.baseUrl}/list/New-Update/index_${page}.html`;
+        const res = await new Client().get(url, { headers: this.getHeaders(url) });
+        return this.mangaListFromPage(res);
+    }
+
+    async search(query, page, filters) {
+        if (!query || !query.trim()) return { list: [], hasNextPage: false };
+        const url = `${this.baseUrl}/search/?name=${encodeURIComponent(query.trim())}&page=${page}`;
+        const res = await new Client().get(url, { headers: this.getHeaders(url) });
+        if (res.statusCode === 200) return this.mangaListFromPage(res);
+        return { list: [], hasNextPage: false };
+    }
+
+    async getDetail(url) {
+        const emptyResult = { name: "", imageUrl: "", description: "", genre: [], status: 5, chapters: [] };
+        if (!url) return emptyResult;
+
+        const absUrl = this.toAbsoluteUrl(url);
+
+        try {
+            const infoRes = await new Client().get(absUrl, { headers: this.getHeaders(absUrl) });
+            const doc = new Document(infoRes.body);
+
+            const titleEl = doc.selectFirst("h1");
+            const name = titleEl ? titleEl.text.trim() : "";
+
+            let imageUrl = "";
+            const imgEl = doc.selectFirst(".bookside-img img, .manga-cover img, div.cover img, img[src*='/logo/']");
+            if (imgEl) {
+                imageUrl = this.toAbsoluteUrl(imgEl.attr("data-src") || imgEl.attr("src") || "");
+            }
+
+            let description = (doc.selectFirst("meta[name='description']") || {}).attr?.("content") || "";
+            if (!description) {
+                const descEl = doc.selectFirst(".manga-info-top p, .book-intro, p.description");
+                description = descEl ? descEl.text.trim() : "";
+            }
+
+            const genreEls = doc.select("a[href*='/category/']");
+            const genre = [...new Set(
+                genreEls
+                    .map(a => a.text.trim())
+                    .filter(t => t && t.length < 40)
+            )];
+
+            let status = 5;
+            const pageText = doc.selectFirst("body") ? doc.selectFirst("body").text : "";
+            const statusMatch = pageText.match(/\(\s*(En marcha|En curso|Completado|Finalizado|En espera|Pausado|Cancelado)\s*\)/i);
+            if (statusMatch) {
+                const s = statusMatch[1].toLowerCase();
+                if (s.includes("marcha") || s.includes("curso")) status = 0;
+                else if (s.includes("complet") || s.includes("finaliz")) status = 1;
+                else if (s.includes("espera") || s.includes("paus")) status = 2;
+                else if (s.includes("cancel")) status = 3;
+            }
+
+            const chapPageUrl = absUrl.replace(/\.html$/, "/chapters.html");
+            const chapRes = await new Client().get(chapPageUrl, { headers: this.getHeaders(chapPageUrl) });
+            const chapDoc = new Document(chapRes.body);
+
+            const chapters = [];
+            const chapLinks = chapDoc.select("a[href*='/chapter/']");
+            for (const link of chapLinks) {
+                const chName = link.text.trim();
+                const chUrl = this.toAbsoluteUrl(link.attr("href") || "");
+                if (chUrl) {
+                    chapters.push({ name: chName, url: chUrl, date: "" });
+                }
+            }
+
+            return { name, imageUrl, description, genre, status, chapters };
+
+        } catch (e) {
+            console.error('[Niadd] Error en getDetail:', e);
+            return emptyResult;
+        }
+    }
+
+    async getPageList(url) {
+        if (!url) return [];
+        const absUrl = this.toAbsoluteUrl(url);
+        try {
+            const res = await new Client().get(absUrl, { headers: this.getHeaders(absUrl) });
+            const doc = new Document(res.body);
+            const pages = [];
+
+            // Obtener imágenes del lector web de Niadd
+            const imgEls = doc.select(".manga-image-container img, .reader-images img, #manga-page");
+            for (const img of imgEls) {
+                const src = img.attr("data-src") || img.attr("src") || "";
+                if (src && !src.includes("logo") && !src.includes("banner")) {
+                    pages.push(this.toAbsoluteUrl(src));
+                }
+            }
+            return pages;
+        } catch (e) {
+            console.error('[Niadd] Error en getPageList:', e);
+            return [];
+        }
+    }
+
+    getFilterList() { return []; }
+    getSourcePreferences() { return []; }
+    async getHtmlContent(name, url) { return ''; }
+    async cleanHtmlContent(html) { return html; }
+    async getVideoList(url) { return []; }
+}
