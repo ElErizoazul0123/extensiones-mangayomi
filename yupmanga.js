@@ -1,6 +1,6 @@
 // ============================================================
 // YupManga - Extensión para Mangayomi (CORREGIDA)
-// Versión: 3.8
+// Versión: 3.9
 // Web: https://www.yupmanga.com
 // ============================================================
 
@@ -12,7 +12,7 @@ const mangayomiSources = [{
     "iconUrl": "https://www.yupmanga.com/img/favicon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "3.8",
+    "version": "3.9",
     "isAdult": false,
     "adult": false,
     "pkgPath": "",
@@ -364,7 +364,7 @@ class DefaultExtension extends MProvider {
     }
 
     // ============================================================
-    // 6. PÁGINAS DE UN CAPÍTULO (CORREGIDA - ROBUSTA SIN EVAL)
+    // 6. PÁGINAS DE UN CAPÍTULO (CORREGIDA CON REFERER ADAPTATIVO)
     // ============================================================
 
     async getPageList(url) {
@@ -385,6 +385,12 @@ class DefaultExtension extends MProvider {
             const seen = new Set();
             let pageKeys = null;
             let totalPages = 0;
+
+            // Intentar extraer el token del capítulo por si la API requiere la ruta alternativa
+            const chapterTokenMatch = html.match(/chapterToken\s*=\s*["']([^"']+)["']/);
+            const chapterToken = chapterTokenMatch ? chapterTokenMatch[1] : '';
+            const chapterIdMatch = absoluteUrl.match(/chapter=(\d+)/);
+            const chapterId = chapterIdMatch ? chapterIdMatch[1] : '';
 
             // 1. Extraer window.readerPageKeys usando limpieza de JSON estructurada
             const keysMatch = html.match(/window\.readerPageKeys\s*=\s*(\{[\s\S]*?\});/);
@@ -425,10 +431,26 @@ class DefaultExtension extends MProvider {
                 for (let i = 1; i <= totalPages; i++) {
                     const key = pageKeys[i.toString()];
                     if (key) {
-                        const imgUrl = this.toAbsoluteUrl(`/image-proxy-v2.php?k=${encodeURIComponent(key)}`);
+                        // Construir URL con key opaca
+                        let imgUrl = this.toAbsoluteUrl(`/image-proxy-v2.php?k=${encodeURIComponent(key)}`);
+                        
+                        // Si tenemos los tokens necesarios de respaldo, estructuramos la URL robusta para evitar fallos de bypass
+                        if (!key && chapterId && chapterToken) {
+                            imgUrl = this.toAbsoluteUrl(`/image-proxy-v2.php?chapter=${chapterId}&page=${i}&token=${encodeURIComponent(chapterToken)}&context=reader`);
+                        }
+
                         if (imgUrl && !seen.has(imgUrl)) {
                             seen.add(imgUrl);
-                            pages.push(imgUrl);
+                            
+                            // IMPORTANTE: Para burlar el control de "Missing parameters" o de hotlinking,
+                            // enviamos la cabecera "Referer" apuntando al capítulo específico actual.
+                            pages.push({
+                                url: imgUrl,
+                                headers: {
+                                    "Referer": absoluteUrl,
+                                    "User-Agent": this.userAgent
+                                }
+                            });
                             count++;
                         }
                     }
@@ -457,7 +479,13 @@ class DefaultExtension extends MProvider {
                     const absSrc = this.toAbsoluteUrl(src);
                     if (!seen.has(absSrc)) {
                         seen.add(absSrc);
-                        pages.push(absSrc);
+                        pages.push({
+                            url: absSrc,
+                            headers: {
+                                "Referer": absoluteUrl,
+                                "User-Agent": this.userAgent
+                            }
+                        });
                     }
                 }
             }
@@ -609,7 +637,7 @@ class NiaddExtension extends MProvider {
             const txt = (a.text || "").trim();
             if (txt.includes("Siguiente") || txt.includes(">>")) {
                 const href = a.attr("href") || "";
-                if (href && href !== "#") { hasNextPage = true; break; }
+                if (href && href !== '#') { hasNextPage = true; break; }
             }
         }
 
