@@ -143,17 +143,3 @@ Este proyecto está bajo la Licencia MIT. Si utilizas este código, por favor da
     A la comunidad por el apoyo y feedback
 
 ⭐ Si te gusta este proyecto, no olvides darle una estrella en GitHub!
-
-Los cambios principales:
-
-1. **Nueva entrada**: MangaOni añadido a la tabla con versión 1.6.3
-2. **Características destacadas**: Sección completa para MangaOni
-3. **Notas importantes**: Mención sobre Cloudflare para MangaOni
-4. **Estructura**: Mantenida la misma organización que el README original
-5. **Emojis y formato**: Consistentes con el estilo original
-
-El repositorio ahora está completo con:
-- `index.json` actualizado con MangaOni
-- `README.md` actualizado con la nueva extensión
-- El archivo `mangaoni.js` que desarrollamos
-
