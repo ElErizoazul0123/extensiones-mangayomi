@@ -1,5 +1,27 @@
 [
   {
+    "name": "LectorOtaku",
+    "id": 111111111,
+    "baseUrl": "https://lectorotaku.com",
+    "lang": "es",
+    "typeSource": "single",
+    "iconUrl": "https://lectorotaku.com/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/lectorotaku.js",
+    "apiUrl": "",
+    "version": "0.1",
+    "isManga": true,
+    "itemType": 0,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Extensión para LectorOtaku - Leer manga, manhwa y novelas en español"
+  },
+  {
     "name": "LeerMangaEsp",
     "id": 123456789,
     "baseUrl": "https://leermangaesp.net",
@@ -64,5 +86,27 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "Extensión para leer manhwa +18 en español (Modo List Style)"
+  },
+  {
+    "name": "YupManga",
+    "id": 999999999,
+    "baseUrl": "https://yupmanga.com",
+    "lang": "es",
+    "typeSource": "single",
+    "iconUrl": "https://yupmanga.com/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/yupmanga.js",
+    "apiUrl": "",
+    "version": "0.1",
+    "isManga": true,
+    "itemType": 0,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "🚧 En desarrollo - Extensión para YupManga"
   }
 ]
