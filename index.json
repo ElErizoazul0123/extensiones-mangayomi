@@ -44,6 +44,28 @@
     "notes": ""
   },
   {
+    "name": "MangaOni",
+    "id": 777777777,
+    "baseUrl": "https://manga-oni.com",
+    "lang": "es",
+    "typeSource": "single",
+    "iconUrl": "https://manga-oni.com/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": true,
+    "hasCloudflare": true,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/mangaoni.js",
+    "apiUrl": "",
+    "version": "1.6.3",
+    "isManga": true,
+    "itemType": 0,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Extensión para MangaOni - Leer manga, manhwa, manhua y novelas en español. Puede requerir cookies manuales por Cloudflare."
+  },
+  {
     "name": "Niadd",
     "id": 987654321,
     "baseUrl": "https://es.niadd.com",
