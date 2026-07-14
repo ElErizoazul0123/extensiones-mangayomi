@@ -1,6 +1,6 @@
 // ============================================================
-// YupManga - Extensión para Mangayomi (CORREGIDA)
-// Versión: 3.9
+// YupManga - Extensión para Mangayomi (CORREGIDA SIN BLOQUEO CF)
+// Versión: 4.0
 // Web: https://www.yupmanga.com
 // ============================================================
 
@@ -12,7 +12,7 @@ const mangayomiSources = [{
     "iconUrl": "https://www.yupmanga.com/img/favicon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "3.9",
+    "version": "4.0",
     "isAdult": false,
     "adult": false,
     "pkgPath": "",
@@ -29,52 +29,25 @@ class DefaultExtension extends MProvider {
     constructor() {
         super();
         this.baseUrl = "https://www.yupmanga.com";
-        this.userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-        this.sessionCookies = '';
         this.foundEndpoints = { chapters: null, search: null };
     }
 
     // ============================================================
-    // CABECERAS HTTP
+    // CABECERAS HTTP (Limpias de conflictos de UA y Cookies)
     // ============================================================
 
     getHeaders(url, includeAjax = false) {
         const headers = {
-            "User-Agent": this.userAgent,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
             "Referer": this.baseUrl,
-            "Connection": "keep-alive",
-            "Cache-Control": "no-cache"
+            "Connection": "keep-alive"
         };
         if (includeAjax) {
             headers["X-Requested-With"] = "XMLHttpRequest";
             headers["Accept"] = "application/json, text/plain, */*";
         }
-        if (this.sessionCookies) {
-            headers["Cookie"] = this.sessionCookies;
-        }
         return headers;
-    }
-
-    // ============================================================
-    // OBTENER COOKIES DE SESIÓN
-    // ============================================================
-
-    async ensureSession() {
-        if (this.sessionCookies) return;
-        try {
-            const res = await new Client().get(this.baseUrl, { headers: this.getHeaders(this.baseUrl) });
-            if (res.headers && res.headers['set-cookie']) {
-                const cookies = res.headers['set-cookie'].map(c => c.split(';')[0]).join('; ');
-                if (cookies) {
-                    this.sessionCookies = cookies;
-                    console.log('[YupManga] 🍪 Cookies de sesión obtenidas');
-                }
-            }
-        } catch (e) {
-            console.warn('[YupManga] ⚠️ No se pudieron obtener cookies de sesión:', e);
-        }
     }
 
     // ============================================================
@@ -190,7 +163,6 @@ class DefaultExtension extends MProvider {
         if (page > 50) return { list: [], hasNextPage: false };
         const url = `${this.baseUrl}/?page=${page}`;
         console.log(`[YupManga] 🌐 Obteniendo página ${page}: ${url}`);
-        await this.ensureSession();
         const res = await new Client().get(url, { headers: this.getHeaders(url) });
         return this.mangaListFromPage(res);
     }
@@ -214,8 +186,6 @@ class DefaultExtension extends MProvider {
             return { list: [], hasNextPage: false };
         }
 
-        await this.ensureSession();
-
         const searchUrl = `${this.baseUrl}/ajax/search.php?q=${encodeURIComponent(query.trim())}&page=${page}`;
         try {
             const res = await new Client().get(searchUrl, {
@@ -233,7 +203,7 @@ class DefaultExtension extends MProvider {
                 return { list, hasNextPage };
             }
         } catch (e) {
-            console.warn('[YupManga] Búsqueda no disponible aún (pendiente de endpoint real)');
+            console.warn('[YupManga] Búsqueda no disponible aún temporalmente');
         }
 
         return { list: [], hasNextPage: false };
@@ -249,8 +219,6 @@ class DefaultExtension extends MProvider {
 
         const absoluteUrl = this.ensureAbsoluteUrl(url);
         console.log(`[YupManga] 📖 Obteniendo detalles de: ${absoluteUrl}`);
-
-        await this.ensureSession();
 
         try {
             const res = await new Client().get(absoluteUrl, { headers: this.getHeaders(absoluteUrl) });
@@ -329,7 +297,6 @@ class DefaultExtension extends MProvider {
                 }
             }
 
-            // ── Fallback: JSON-LD ──
             if (chapters.length === 0) {
                 const jsonLdMatch = res.body.match(/<script type="application\/ld\+json">(.*?)<\/script>/s);
                 if (jsonLdMatch) {
@@ -364,7 +331,7 @@ class DefaultExtension extends MProvider {
     }
 
     // ============================================================
-    // 6. PÁGINAS DE UN CAPÍTULO (CORREGIDA CON REFERER ADAPTATIVO)
+    // 6. PÁGINAS DE UN CAPÍTULO
     // ============================================================
 
     async getPageList(url) {
@@ -386,36 +353,33 @@ class DefaultExtension extends MProvider {
             let pageKeys = null;
             let totalPages = 0;
 
-            // Intentar extraer el token del capítulo por si la API requiere la ruta alternativa
             const chapterTokenMatch = html.match(/chapterToken\s*=\s*["']([^"']+)["']/);
             const chapterToken = chapterTokenMatch ? chapterTokenMatch[1] : '';
             const chapterIdMatch = absoluteUrl.match(/chapter=(\d+)/);
             const chapterId = chapterIdMatch ? chapterIdMatch[1] : '';
 
-            // 1. Extraer window.readerPageKeys usando limpieza de JSON estructurada
+            // Extraer window.readerPageKeys
             const keysMatch = html.match(/window\.readerPageKeys\s*=\s*(\{[\s\S]*?\});/);
             
             if (keysMatch) {
                 try {
                     let keysStr = keysMatch[1];
                     keysStr = keysStr
-                        .replace(/\/\/.*$/gm, '')                  // Eliminar comentarios de línea
-                        .replace(/\/\*[\s\S]*?\*\//g, '')          // Eliminar comentarios multilínea
-                        .replace(/['"]/g, '"')                      // Normalizar comillas simples a dobles
-                        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":') // Colocar comillas dobles a las propiedades
-                        .replace(/,\s*}/g, '}')                    // Eliminar comas flotantes finales
-                        .replace(/,\s*]/g, ']')                    // Eliminar comas flotantes finales en arrays
-                        .replace(/\s+/g, ' ')                      // Limpiar saltos de línea y tabuladores redundantes
+                        .replace(/\/\/.*$/gm, '')                  
+                        .replace(/\/\*[\s\S]*?\*\//g, '')          
+                        .replace(/['"]/g, '"')                      
+                        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":') 
+                        .replace(/,\s*}/g, '}')                    
+                        .replace(/,\s*]/g, ']')                    
+                        .replace(/\s+/g, ' ')                      
                         .trim();
 
                     pageKeys = JSON.parse(keysStr);
-                    console.log(`[YupManga] ✅ pageKeys extraído con éxito (JSON): ${Object.keys(pageKeys).length} claves`);
                 } catch (e) {
-                    console.warn('[YupManga] ⚠️ Error limpiando y parseando pageKeys con JSON.parse:', e);
+                    console.warn('[YupManga] ⚠️ Error limpiando pageKeys:', e);
                 }
             }
 
-            // 2. Determinar la cantidad total de páginas (totalPages)
             const totalMatch = html.match(/totalPages\s*:\s*(\d+)/);
             if (totalMatch) {
                 totalPages = parseInt(totalMatch[1], 10);
@@ -423,18 +387,14 @@ class DefaultExtension extends MProvider {
                 const keys = Object.keys(pageKeys);
                 totalPages = keys.length ? Math.max(...keys.map(k => parseInt(k, 10))) : 0;
             }
-            console.log(`[YupManga] 📊 totalPages detectadas: ${totalPages}`);
 
-            // 3. Reconstruir las URLs usando las claves validadas
             if (pageKeys && totalPages > 0) {
                 let count = 0;
                 for (let i = 1; i <= totalPages; i++) {
                     const key = pageKeys[i.toString()];
                     if (key) {
-                        // Construir URL con key opaca
                         let imgUrl = this.toAbsoluteUrl(`/image-proxy-v2.php?k=${encodeURIComponent(key)}`);
                         
-                        // Si tenemos los tokens necesarios de respaldo, estructuramos la URL robusta para evitar fallos de bypass
                         if (!key && chapterId && chapterToken) {
                             imgUrl = this.toAbsoluteUrl(`/image-proxy-v2.php?chapter=${chapterId}&page=${i}&token=${encodeURIComponent(chapterToken)}&context=reader`);
                         }
@@ -442,27 +402,23 @@ class DefaultExtension extends MProvider {
                         if (imgUrl && !seen.has(imgUrl)) {
                             seen.add(imgUrl);
                             
-                            // IMPORTANTE: Para burlar el control de "Missing parameters" o de hotlinking,
-                            // enviamos la cabecera "Referer" apuntando al capítulo específico actual.
                             pages.push({
                                 url: imgUrl,
                                 headers: {
-                                    "Referer": absoluteUrl,
-                                    "User-Agent": this.userAgent
+                                    "Referer": absoluteUrl
                                 }
                             });
                             count++;
                         }
                     }
                 }
-                console.log(`[YupManga] ✅ Páginas mapeadas con Keys: ${count}/${totalPages}`);
                 if (pages.length > 0) {
                     return pages;
                 }
             }
 
-            // 4. Fallback directo buscando etiquetas de imagen en el lector HTML
-            console.warn('[YupManga] ⚠️ Usando fallback directo de imágenes del HTML...');
+            // Fallback directo
+            console.warn('[YupManga] ⚠️ Usando fallback directo del HTML...');
             const imgRegex = /<img[^>]+(?:data-src|src)=["']([^"']+)["']/gi;
             let match;
             while ((match = imgRegex.exec(html)) !== null) {
@@ -482,15 +438,13 @@ class DefaultExtension extends MProvider {
                         pages.push({
                             url: absSrc,
                             headers: {
-                                "Referer": absoluteUrl,
-                                "User-Agent": this.userAgent
+                                "Referer": absoluteUrl
                             }
                         });
                     }
                 }
             }
 
-            console.log(`[YupManga] 🖼️ Páginas extraídas vía fallback: ${pages.length}`);
             return pages;
 
         } catch (e) {
@@ -498,10 +452,6 @@ class DefaultExtension extends MProvider {
             return [];
         }
     }
-
-    // ============================================================
-    // 7. FILTROS Y PREFERENCIAS
-    // ============================================================
 
     getFilterList() {
         return [
@@ -539,7 +489,6 @@ class DefaultExtension extends MProvider {
     async getVideoList(url) { return []; }
 }
 
-// Inicializar y exportar YupManga de forma global
 const extensionInstance = new DefaultExtension();
 var extention = extensionInstance;
 var extension = extensionInstance;
@@ -557,8 +506,8 @@ if (typeof globalThis !== 'undefined') {
 
 
 // ============================================================
-// Niadd - Extensión para Mangayomi
-// Versión: 0.3
+// Niadd - Extensión para Mangayomi (CORREGIDA SIN BLOQUEO CF)
+// Versión: 0.4
 // Web: https://es.niadd.com
 // ============================================================
 
@@ -570,7 +519,7 @@ const niaddSources = [{
     "iconUrl": "https://es.niadd.com/files/images/favicon.ico",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.3",
+    "version": "0.4",
     "pkgPath": "",
     "notes": "Extensión para Niadd - Leer manga en español"
 }];
@@ -584,7 +533,6 @@ class NiaddExtension extends MProvider {
 
     getHeaders(url) {
         return {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Referer": this.baseUrl,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             "Accept-Language": "es-ES,es;q=0.9,en;q=0.8"
@@ -743,7 +691,6 @@ class NiaddExtension extends MProvider {
             const doc = new Document(res.body);
             const pages = [];
 
-            // Obtener imágenes del lector web de Niadd
             const imgEls = doc.select(".manga-image-container img, .reader-images img, #manga-page");
             for (const img of imgEls) {
                 const src = img.attr("data-src") || img.attr("src") || "";
