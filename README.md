@@ -41,7 +41,7 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 | LeerMangaEsp | 🇪🇸 Español | 0.2 | [leermangaesp.net](https://leermangaesp.net) | Manga general | ✅ Activa |
 | Niadd | 🇪🇸 Español | 0.2 | [es.niadd.com](https://es.niadd.com) | Manga general | ✅ Activa |
 | **VerManhwa** | 🇪🇸 Español | **0.3** | [vermanhwa.com](https://vermanhwa.com) | **Manhwa +18** 🔞 | ✅ Activa |
-| **YupManga** | 🇪🇸 Español | **0.1** | [yupmanga.com](https://yupmanga.com) | Manga general | 🚧 En desarrollo |
+| **YupManga** | 🇪🇸 Español | **0.5** | [yupmanga.com](https://yupmanga.com) | Manga general | 🚧 En desarrollo |
 
 ### 🎯 Características destacadas
 
@@ -87,61 +87,4 @@ Si quieres probar cambios localmente:
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/ElErizoazul0123/extensiones-mangayomi.git
-
-# Estructura del proyecto
-extensiones-mangayomi/
-├── index.json          # Configuración principal
-├── icon.png            # Icono del repositorio
-├── lectorotaku.js      # Extensión LectorOtaku
-├── leermangaesp.js     # Extensión LeerMangaEsp
-├── niadd.js            # Extensión Niadd
-├── vermanhwa.js        # Extensión VerManhwa
-├── yupmanga.js         # Extensión YupManga (WIP)
-└── README.md           # Esta documentación
-
-🐛 Soporte
-
-    Si encuentras un error, abre un issue en este repositorio
-
-    Si quieres contribuir, haz un fork y envía un pull request
-
-    Para dudas o sugerencias, contacta a través de GitHub
-
-Versión	Fecha	Extensión	Cambios
-0.1	2026-07-13	LectorOtaku	✨ Lanzamiento inicial — API + HTML fallback, soporte para manga, manhwa y novelas
-0.1	2026-07-13	YupManga	🚧 Estructura inicial (en desarrollo)
-0.3	2026-06-29	VerManhwa	✨ Lanzamiento inicial — lista, detalle y lectura de capítulos (Modo List Style)
-0.2	2026-06-29	Niadd	✨ Lanzamiento inicial — lista, detalle y lectura de capítulos
-0.2	2026-06-28	LeerMangaEsp	✨ Lanzamiento inicial
-
-📜 Licencia
-
-Este proyecto está bajo la licencia Apache 2.0.
-
-Puedes usar, copiar, modificar y distribuir este software libremente, incluso en proyectos comerciales, siempre que incluyas el aviso de copyright y la licencia originales.
-text
-
-Copyright 2026 ElErizoazul0123
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-🙏 Agradecimientos
-
-    A la comunidad de Mangayomi por su increíble trabajo
-
-    A los desarrolladores que comparten su conocimiento
-
-    A todos los que contribuyen al mundo del código abierto
-
-    A la comunidad hispanohablante por su apoyo
+git clone [https://github.com/ElErizoazul0123/extensiones-mangayomi.git](https://github.com/ElErizoazul0123/extensiones-mangayomi.git)
