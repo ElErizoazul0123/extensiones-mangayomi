@@ -1,6 +1,6 @@
 // ============================================================
-// YupManga - Extensión para Mangayomi (CORREGIDA SIN BLOQUEO CF)
-// Versión: 4.0
+// YupManga - Extensión para Mangayomi (CORREGIDA CON UA DINÁMICO)
+// Versión: 0.5
 // Web: https://www.yupmanga.com
 // ============================================================
 
@@ -12,32 +12,56 @@ const mangayomiSources = [{
     "iconUrl": "https://www.yupmanga.com/img/favicon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "4.0",
+    "version": "0.5",
     "isAdult": false,
     "adult": false,
     "pkgPath": "",
     "notes": "Extensión para YupManga - Leer manga en español (Yuri/GL)"
 }];
 
-// ============================================================
-// DECLARACIÓN GLOBAL DE 'extention'
-// ============================================================
 var extention;
 
 class DefaultExtension extends MProvider {
 
     constructor() {
         super();
-        this.baseUrl = "https://www.yupmanga.com";
         this.foundEndpoints = { chapters: null, search: null };
     }
 
     // ============================================================
-    // CABECERAS HTTP (Limpias de conflictos de UA y Cookies)
+    // AJUSTES DINÁMICOS (Base URL y User-Agent vía SharedPreferences)
     // ============================================================
+
+    get baseUrl() {
+        try {
+            const pref = new SharedPreferences();
+            const domain = pref.get("yupmanga_pref_domain");
+            if (domain && domain.trim() !== "") {
+                return domain.trim();
+            }
+        } catch (e) {
+            console.warn("[YupManga] No se pudo leer el dominio de las preferencias:", e);
+        }
+        return "https://www.yupmanga.com";
+    }
+
+    get userAgent() {
+        try {
+            const pref = new SharedPreferences();
+            const ua = pref.get("yupmanga_pref_ua");
+            if (ua && ua.trim() !== "") {
+                return ua.trim();
+            }
+        } catch (e) {
+            console.warn("[YupManga] No se pudo leer el User-Agent de las preferencias:", e);
+        }
+        // UA por defecto (Windows 11 Chrome)
+        return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
+    }
 
     getHeaders(url, includeAjax = false) {
         const headers = {
+            "User-Agent": this.userAgent,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
             "Referer": this.baseUrl,
@@ -99,7 +123,7 @@ class DefaultExtension extends MProvider {
     }
 
     // ============================================================
-    // 1. PARSEO DE LISTAS DE MANGAS
+    // PARSEO DE LISTAS DE MANGAS
     // ============================================================
 
     mangaListFromPage(res) {
@@ -151,35 +175,21 @@ class DefaultExtension extends MProvider {
             }
         }
 
-        console.log(`[YupManga] ✅ Mangas extraídos: ${list.length} | HasNextPage: ${hasNextPage}`);
         return { list, hasNextPage };
     }
-
-    // ============================================================
-    // 2. POPULARES
-    // ============================================================
 
     async getPopular(page) {
         if (page > 50) return { list: [], hasNextPage: false };
         const url = `${this.baseUrl}/?page=${page}`;
-        console.log(`[YupManga] 🌐 Obteniendo página ${page}: ${url}`);
         const res = await new Client().get(url, { headers: this.getHeaders(url) });
         return this.mangaListFromPage(res);
     }
-
-    // ============================================================
-    // 3. ÚLTIMAS ACTUALIZACIONES
-    // ============================================================
 
     get supportsLatest() { return true; }
 
     async getLatestUpdates(page) {
         return this.getPopular(page);
     }
-
-    // ============================================================
-    // 4. BÚSQUEDA
-    // ============================================================
 
     async search(query, page, filters) {
         if (!query || query.trim() === '') {
@@ -203,14 +213,14 @@ class DefaultExtension extends MProvider {
                 return { list, hasNextPage };
             }
         } catch (e) {
-            console.warn('[YupManga] Búsqueda no disponible aún temporalmente');
+            console.warn('[YupManga] Búsqueda no disponible temporalmente');
         }
 
         return { list: [], hasNextPage: false };
     }
 
     // ============================================================
-    // 5. DETALLES DEL MANGA
+    // DETALLES DEL MANGA
     // ============================================================
 
     async getDetail(url) {
@@ -218,7 +228,6 @@ class DefaultExtension extends MProvider {
         if (!url) return emptyResult;
 
         const absoluteUrl = this.ensureAbsoluteUrl(url);
-        console.log(`[YupManga] 📖 Obteniendo detalles de: ${absoluteUrl}`);
 
         try {
             const res = await new Client().get(absoluteUrl, { headers: this.getHeaders(absoluteUrl) });
@@ -257,14 +266,12 @@ class DefaultExtension extends MProvider {
             const authorEl = doc.selectFirst('a[href^="/autor/"]');
             if (authorEl) author = this.getText(authorEl);
 
-            // ── Capítulos vía AJAX ──
             const seriesId = url.match(/id=([^&]+)/)?.[1] || '';
             let chapters = [];
 
             if (seriesId) {
                 const timestamp = Date.now();
                 const chapUrl = `${this.baseUrl}/ajax/load_chapters.php?series_id=${seriesId}&page=1&order=oldest_first&_=${timestamp}`;
-                console.log(`[YupManga] 📚 Obteniendo capítulos desde: ${chapUrl}`);
 
                 try {
                     const chapRes = await new Client().get(chapUrl, {
@@ -289,7 +296,6 @@ class DefaultExtension extends MProvider {
                                     });
                                 }
                             }
-                            console.log(`[YupManga] ✅ Capítulos obtenidos: ${chapters.length}`);
                         }
                     }
                 } catch (e) {
@@ -312,7 +318,6 @@ class DefaultExtension extends MProvider {
                                     });
                                 }
                             }
-                            console.log(`[YupManga] 📖 Capítulos desde JSON-LD: ${chapters.length}`);
                         }
                     } catch (e) {
                         console.warn('[YupManga] Error parseando JSON-LD:', e);
@@ -331,22 +336,18 @@ class DefaultExtension extends MProvider {
     }
 
     // ============================================================
-    // 6. PÁGINAS DE UN CAPÍTULO
+    // PÁGINAS DE UN CAPÍTULO
     // ============================================================
 
     async getPageList(url) {
         if (!url) return [];
 
         const absoluteUrl = this.ensureAbsoluteUrl(url);
-        console.log(`[YupManga] 🖼️ Obteniendo páginas de: ${absoluteUrl}`);
 
         try {
             const res = await new Client().get(absoluteUrl, { headers: this.getHeaders(absoluteUrl) });
             const html = res.body;
-            if (!html) {
-                console.warn('[YupManga] ⚠️ HTML vacío');
-                return [];
-            }
+            if (!html) return [];
 
             const pages = [];
             const seen = new Set();
@@ -358,7 +359,6 @@ class DefaultExtension extends MProvider {
             const chapterIdMatch = absoluteUrl.match(/chapter=(\d+)/);
             const chapterId = chapterIdMatch ? chapterIdMatch[1] : '';
 
-            // Extraer window.readerPageKeys
             const keysMatch = html.match(/window\.readerPageKeys\s*=\s*(\{[\s\S]*?\});/);
             
             if (keysMatch) {
@@ -376,7 +376,7 @@ class DefaultExtension extends MProvider {
 
                     pageKeys = JSON.parse(keysStr);
                 } catch (e) {
-                    console.warn('[YupManga] ⚠️ Error limpiando pageKeys:', e);
+                    console.warn('[YupManga] Error limpiando pageKeys:', e);
                 }
             }
 
@@ -389,7 +389,6 @@ class DefaultExtension extends MProvider {
             }
 
             if (pageKeys && totalPages > 0) {
-                let count = 0;
                 for (let i = 1; i <= totalPages; i++) {
                     const key = pageKeys[i.toString()];
                     if (key) {
@@ -401,45 +400,28 @@ class DefaultExtension extends MProvider {
 
                         if (imgUrl && !seen.has(imgUrl)) {
                             seen.add(imgUrl);
-                            
                             pages.push({
                                 url: imgUrl,
-                                headers: {
-                                    "Referer": absoluteUrl
-                                }
+                                headers: { "Referer": absoluteUrl, "User-Agent": this.userAgent }
                             });
-                            count++;
                         }
                     }
                 }
-                if (pages.length > 0) {
-                    return pages;
-                }
+                if (pages.length > 0) return pages;
             }
 
-            // Fallback directo
-            console.warn('[YupManga] ⚠️ Usando fallback directo del HTML...');
+            // Fallback
             const imgRegex = /<img[^>]+(?:data-src|src)=["']([^"']+)["']/gi;
             let match;
             while ((match = imgRegex.exec(html)) !== null) {
                 let src = match[1].trim();
-                
-                if (
-                    src && 
-                    !src.startsWith('data:') && 
-                    !src.includes('logo') && 
-                    !src.includes('avatar') && 
-                    !src.includes('icon') &&
-                    !src.includes('favicon')
-                ) {
+                if (src && !src.startsWith('data:') && !src.includes('logo') && !src.includes('avatar') && !src.includes('icon')) {
                     const absSrc = this.toAbsoluteUrl(src);
                     if (!seen.has(absSrc)) {
                         seen.add(absSrc);
                         pages.push({
                             url: absSrc,
-                            headers: {
-                                "Referer": absoluteUrl
-                            }
+                            headers: { "Referer": absoluteUrl, "User-Agent": this.userAgent }
                         });
                     }
                 }
@@ -476,9 +458,19 @@ class DefaultExtension extends MProvider {
                 editTextPreference: {
                     title: "URL del dominio",
                     summary: "Cambia el dominio si es necesario",
-                    value: this.baseUrl,
+                    value: "https://www.yupmanga.com",
                     dialogTitle: "URL",
                     dialogMessage: "Introduce la URL base del sitio"
+                }
+            },
+            {
+                key: "yupmanga_pref_ua",
+                editTextPreference: {
+                    title: "User-Agent personalizado",
+                    summary: "Obligatorio para Cloudflare. En ordenadores suele funcionar el de por defecto. En móviles, pega el de tu dispositivo si falla.",
+                    value: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+                    dialogTitle: "User-Agent",
+                    dialogMessage: "Introduce el User-Agent exacto de tu dispositivo"
                 }
             }
         ];
@@ -506,8 +498,8 @@ if (typeof globalThis !== 'undefined') {
 
 
 // ============================================================
-// Niadd - Extensión para Mangayomi (CORREGIDA SIN BLOQUEO CF)
-// Versión: 0.4
+// Niadd - Extensión para Mangayomi (CORREGIDA CON UA DINÁMICO)
+// Versión: 0.2
 // Web: https://es.niadd.com
 // ============================================================
 
@@ -519,7 +511,7 @@ const niaddSources = [{
     "iconUrl": "https://es.niadd.com/files/images/favicon.ico",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4",
+    "version": "0.2",
     "pkgPath": "",
     "notes": "Extensión para Niadd - Leer manga en español"
 }];
@@ -528,11 +520,33 @@ class NiaddExtension extends MProvider {
 
     constructor() {
         super();
-        this.baseUrl = "https://es.niadd.com";
+    }
+
+    get baseUrl() {
+        try {
+            const pref = new SharedPreferences();
+            const domain = pref.get("niadd_pref_domain");
+            if (domain && domain.trim() !== "") {
+                return domain.trim();
+            }
+        } catch (e) {}
+        return "https://es.niadd.com";
+    }
+
+    get userAgent() {
+        try {
+            const pref = new SharedPreferences();
+            const ua = pref.get("niadd_pref_ua");
+            if (ua && ua.trim() !== "") {
+                return ua.trim();
+            }
+        } catch (e) {}
+        return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
     }
 
     getHeaders(url) {
         return {
+            "User-Agent": this.userAgent,
             "Referer": this.baseUrl,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             "Accept-Language": "es-ES,es;q=0.9,en;q=0.8"
@@ -566,16 +580,6 @@ class NiaddExtension extends MProvider {
                     imgInside.attr("data-src") || imgInside.attr("src") || ""
                 );
             }
-            if (!imageUrl) {
-                const parent = a.parentNode;
-                const imgSibling = parent ? parent.selectFirst("img") : null;
-                if (imgSibling) {
-                    imageUrl = this.toAbsoluteUrl(
-                        imgSibling.attr("data-src") || imgSibling.attr("src") || ""
-                    );
-                }
-            }
-
             seen.add(link);
             list.push({ name, imageUrl, link });
         }
@@ -632,7 +636,7 @@ class NiaddExtension extends MProvider {
             const name = titleEl ? titleEl.text.trim() : "";
 
             let imageUrl = "";
-            const imgEl = doc.selectFirst(".bookside-img img, .manga-cover img, div.cover img, img[src*='/logo/']");
+            const imgEl = doc.selectFirst(".bookside-img img, .manga-cover img, div.cover img");
             if (imgEl) {
                 imageUrl = this.toAbsoluteUrl(imgEl.attr("data-src") || imgEl.attr("src") || "");
             }
@@ -645,20 +649,16 @@ class NiaddExtension extends MProvider {
 
             const genreEls = doc.select("a[href*='/category/']");
             const genre = [...new Set(
-                genreEls
-                    .map(a => a.text.trim())
-                    .filter(t => t && t.length < 40)
+                genreEls.map(a => a.text.trim()).filter(t => t && t.length < 40)
             )];
 
             let status = 5;
             const pageText = doc.selectFirst("body") ? doc.selectFirst("body").text : "";
-            const statusMatch = pageText.match(/\(\s*(En marcha|En curso|Completado|Finalizado|En espera|Pausado|Cancelado)\s*\)/i);
+            const statusMatch = pageText.match(/\(\s*(En marcha|En curso|Completado|Finalizado)\s*\)/i);
             if (statusMatch) {
                 const s = statusMatch[1].toLowerCase();
                 if (s.includes("marcha") || s.includes("curso")) status = 0;
                 else if (s.includes("complet") || s.includes("finaliz")) status = 1;
-                else if (s.includes("espera") || s.includes("paus")) status = 2;
-                else if (s.includes("cancel")) status = 3;
             }
 
             const chapPageUrl = absUrl.replace(/\.html$/, "/chapters.html");
@@ -706,7 +706,32 @@ class NiaddExtension extends MProvider {
     }
 
     getFilterList() { return []; }
-    getSourcePreferences() { return []; }
+    
+    getSourcePreferences() {
+        return [
+            {
+                key: "niadd_pref_domain",
+                editTextPreference: {
+                    title: "URL del dominio",
+                    summary: "Cambia el dominio si es necesario",
+                    value: "https://es.niadd.com",
+                    dialogTitle: "URL",
+                    dialogMessage: "Introduce la URL base del sitio"
+                }
+            },
+            {
+                key: "niadd_pref_ua",
+                editTextPreference: {
+                    title: "User-Agent personalizado",
+                    summary: "Para evadir Cloudflare. Deja en blanco para usar el de Windows por defecto.",
+                    value: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+                    dialogTitle: "User-Agent",
+                    dialogMessage: "Introduce el User-Agent exacto de tu dispositivo"
+                }
+            }
+        ];
+    }
+    
     async getHtmlContent(name, url) { return ''; }
     async cleanHtmlContent(html) { return html; }
     async getVideoList(url) { return []; }
