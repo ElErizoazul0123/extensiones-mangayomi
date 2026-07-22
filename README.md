@@ -49,8 +49,9 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 
 ### NOTICIAS SOBRE ACTUALIZACIONES DE LAS EXTENSIONES
 
-**skymanga** : extension nueva, totalmente funcional
-**LeerMangas** : la web se mudo por eso la extension no funciona
+| **skymanga** : extension nueva, totalmente funcional
+
+| **LeerMangas** : la web se mudo por eso la extension no funciona
 
 ---
 
