@@ -41,7 +41,8 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 | LeerMangaEsp | 🇪🇸 Español | 0.2 | [leermangaesp.net](https://leermangaesp.net) | Manga general | ✅ Activa |
 | **MangaOni** | 🇪🇸 Español | **1.6.3** | [manga-oni.com](https://manga-oni.com) | Manga, Manhwa, Manhua y Novelas | ✅ Activa |
 | Niadd | 🇪🇸 Español | 0.2 | [es.niadd.com](https://es.niadd.com) | Manga general | ✅ Activa |
-| **Qtoon** | 🇪🇸 Español | **0.1** | [qtoon.org](https://qtoon.org) | Manga, Manhwa, Manhua y Webtoon | ✅ Activa |
+| **Qtoon** | 🇪🇸 Español | **0.2** | [qtoon.org](https://qtoon.org) | Manga, Manhwa, Manhua y Webtoon | ✅ Activa |
+| **TaurusManga** | 🇪🇸 Español | **1.0.0** | [lectortaurus.com](https://lectortaurus.com) | Manga y Manhwa (Madara) | ✅ Activa |
 | **VerManhwa** | 🇪🇸 Español | **0.3** | [vermanhwa.com](https://vermanhwa.com) | **Manhwa +18** 🔞 | ✅ Activa |
 | **YupManga** | 🇪🇸 Español | **0.5** | [yupmanga.com](https://yupmanga.com) | Manga general | 🚧 En desarrollo |
 
@@ -62,12 +63,18 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 - 📚 Sistema de filtros completo (género, estado, tipo, adulto, orden)
 - ⚡ Carga de imágenes con lazy loading
 
-**Qtoon** (v0.1):
+**Qtoon** (v0.2):
 - 🌐 Detección automática de idiomas y banderas (ES, EN, PT-BR, etc.)
 - 📖 Extracción precisa y limpia de listas de capítulos (incluyendo EP y números de capítulo)
 - 🖼️ Carga optimizada de portadas y miniaturas de alta resolución
 - 🏷️ Extracción inteligente de metadatos: géneros, estado (En curso/Completado) y tipo de obra
 - 🔍 Búsqueda integrada y navegación fluida por la biblioteca
+
+**TaurusManga** (v1.0.0):
+- 🏛️ Adaptación optimizada para sitios basados en el tema Madara/WordPress
+- 🖼️ Extracción robusta de imágenes de capítulos (compatibilidad con DOM directo y script JS)
+- 🔍 Búsqueda integrada y filtros de ordenación (Último, A-Z, Tendencia, Más Vistos)
+- ⚙️ Ajuste de preferencias para personalizar la URL base desde la app
 
 **VerManhwa** (v0.3):
 - 🔞 Contenido para adultos (+18)
@@ -105,7 +112,7 @@ Si quieres probar cambios localmente:
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/ElErizoazul0123/extensiones-mangayomi.git
+git clone [https://github.com/ElErizoazul0123/extensiones-mangayomi.git](https://github.com/ElErizoazul0123/extensiones-mangayomi.git)
 
 # Navegar al directorio
 cd extensiones-mangayomi
