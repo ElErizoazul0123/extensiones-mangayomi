@@ -47,9 +47,7 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 | **YupManga** | 🇪🇸 Español | **0.5** | [yupmanga.com](https://yupmanga.com) | Manga general | 🚧 En desarrollo |
 | **skymangas** | 🇪🇸 Español | **0.2** | [yupmanga.com](https://yupmanga.com) | Manga general | 🚧 En desarrollo |
 
-### 🎯 Características destacadas
-
-NOTICIAS SOBRE ACTUALIZACIONES DE LAS EXTENSIONES
+### NOTICIAS SOBRE ACTUALIZACIONES DE LAS EXTENSIONES
 
 **skymanga** : extension nueva, totalmente funcional
 **LeerMangas** : la web se mudo por eso la extension no funciona
