@@ -64,4 +64,51 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 
 **Qtoon** (v0.1):
 - 🌐 Detección automática de idiomas y banderas (ES, EN, PT-BR, etc.)
-- 📖 Extracción precisa y limpia de listas de capítulos (incluyendo EP y números
+- 📖 Extracción precisa y limpia de listas de capítulos (incluyendo EP y números de capítulo)
+- 🖼️ Carga optimizada de portadas y miniaturas de alta resolución
+- 🏷️ Extracción inteligente de metadatos: géneros, estado (En curso/Completado) y tipo de obra
+- 🔍 Búsqueda integrada y navegación fluida por la biblioteca
+
+**VerManhwa** (v0.3):
+- 🔞 Contenido para adultos (+18)
+- 🎨 Modo List Style
+- 📖 Lectura optimizada para manhwa
+
+---
+
+## 📥 Instalación manual (alternativa)
+
+Si prefieres instalar una extensión específica manualmente:
+
+1. Descarga el archivo `.js` de la extensión que quieras
+2. Colócalo en la carpeta de extensiones de Mangayomi
+3. Reinicia la app
+
+---
+
+## 🔧 Cómo crear tus propias extensiones
+
+Si quieres aprender a crear extensiones para Mangayomi:
+
+1. Estudia la estructura de este repositorio
+2. Revisa el código de las extensiones existentes
+3. Consulta la [documentación de Mangayomi](https://github.com/kodjodevf/mangayomi)
+4. Analiza extensiones de otros creadores
+
+Todas las extensiones en este repositorio son de **código abierto** y están disponibles para que cualquiera las estudie, modifique y mejore.
+
+---
+
+## 🛠️ Desarrollo local
+
+Si quieres probar cambios localmente:
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/ElErizoazul0123/extensiones-mangayomi.git
+
+# Navegar al directorio
+cd extensiones-mangayomi
+
+# Hacer cambios en los archivos .js
+# Probar con Mangayomi en modo desarrollo
