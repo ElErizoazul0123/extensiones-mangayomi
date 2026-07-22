@@ -1,5 +1,5 @@
 // MangaOni - Extensión para Mangayomi
-// Versión: 1.6.3
+// Versión: 0.3
 // Web: https://manga-oni.com
 
 const mangayomiSources = [{
@@ -10,7 +10,7 @@ const mangayomiSources = [{
     "iconUrl": "https://manga-oni.com/favicon.ico",
     "typeSource": "single",
     "itemType": 0,
-    "version": "1.6.3",
+    "version": "0.3",
     "isAdult": true,
     "adult": true,
     "pkgPath": "",
