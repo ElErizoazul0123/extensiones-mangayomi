@@ -88,6 +88,28 @@
     "notes": ""
   },
   {
+    "name": "Qtoon",
+    "id": 888888888,
+    "baseUrl": "https://qtoon.org",
+    "lang": "es",
+    "typeSource": "single",
+    "iconUrl": "https://qtoon.org/theme/assets/images/favicon/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ElErizoazul0123/extensiones-mangayomi/main/qtoon.js",
+    "apiUrl": "",
+    "version": "0.2",
+    "isManga": true,
+    "itemType": 0,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Extensión para Qtoon - Leer manga, manhwa, manhua y webtoons en español"
+  },
+  {
     "name": "VerManhwa",
     "id": 555555555,
     "baseUrl": "https://vermanhwa.com",
