@@ -49,38 +49,10 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 
 ### 🎯 Características destacadas
 
-**LectorOtaku** (v0.1):
-- 🔄 Sistema híbrido: API + HTML fallback
-- 📱 Soporte para manga, manhwa y novelas
-- ⚡ Carga rápida de capítulos
-- 🔍 Búsqueda optimizada
+NOTICIAS SOBRE ACTUALIZACIONES DE LAS EXTENSIONES
 
-**MangaOni** (v1.6.3):
-- 📖 Soporte para manga, manhwa, manhua y novelas
-- 🔐 Manejo de Cloudflare con cookies automáticas
-- 🖼️ Decodificación de imágenes en Base64
-- 🎨 Modo oscuro automático
-- 🔍 Búsqueda optimizada con filtros
-- 📚 Sistema de filtros completo (género, estado, tipo, adulto, orden)
-- ⚡ Carga de imágenes con lazy loading
-
-**Qtoon** (v0.2):
-- 🌐 Detección automática de idiomas y banderas (ES, EN, PT-BR, etc.)
-- 📖 Extracción precisa y limpia de listas de capítulos (incluyendo EP y números de capítulo)
-- 🖼️ Carga optimizada de portadas y miniaturas de alta resolución
-- 🏷️ Extracción inteligente de metadatos: géneros, estado (En curso/Completado) y tipo de obra
-- 🔍 Búsqueda integrada y navegación fluida por la biblioteca
-
-**TaurusManga** (v1.0.0):
-- 🏛️ Adaptación optimizada para sitios basados en el tema Madara/WordPress
-- 🖼️ Extracción robusta de imágenes de capítulos (compatibilidad con DOM directo y script JS)
-- 🔍 Búsqueda integrada y filtros de ordenación (Último, A-Z, Tendencia, Más Vistos)
-- ⚙️ Ajuste de preferencias para personalizar la URL base desde la app
-
-**VerManhwa** (v0.3):
-- 🔞 Contenido para adultos (+18)
-- 🎨 Modo List Style
-- 📖 Lectura optimizada para manhwa
+**skymanga** : extension nueva, totalmente funcional
+**LeerMangas** : la web se mudo por eso la extension no funciona
 
 ---
 
