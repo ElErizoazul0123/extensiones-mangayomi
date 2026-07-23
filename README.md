@@ -45,7 +45,7 @@ Puedes añadir este repositorio como fuente de extensiones en Mangayomi:
 | **TaurusManga** | 🇪🇸 Español | **1.0.0** | [lectortaurus.com](https://lectortaurus.com) | Manga y Manhwa (Madara) | ✅ Activa |
 | **VerManhwa** | 🇪🇸 Español | **0.3** | [vermanhwa.com](https://vermanhwa.com) | **Manhwa +18** 🔞 | ✅ Activa |
 | **YupManga** | 🇪🇸 Español | **0.5** | [yupmanga.com](https://yupmanga.com) | Manga general | 🚧 En desarrollo |
-| **skymangas** | 🇪🇸 Español | **0.2** | [yupmanga.com](https://yupmanga.com) | Manga general | 🚧 En desarrollo |
+| **skymangas** | 🇪🇸 Español | **0.2** | [https://www.skymangas.com](https://www.skymangas.com) | Manga general | ✅ Activa |
 
 ### NOTICIAS SOBRE ACTUALIZACIONES DE LAS EXTENSIONES
 
